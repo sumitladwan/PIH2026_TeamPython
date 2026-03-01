@@ -1,73 +1,66 @@
 import { NextRequest, NextResponse } from 'next/server';
-import validateEnvironment from './lib/db/validateEnv';
-
-// Middleware runs for every request. We only perform the heavier
-// environment validation on API routes so developers get a helpful
-// JSON error instead of a cryptic DNS/auth error coming from Mongoose.
-export async function middleware(req: NextRequest) {
-  try {
-    if (req.nextUrl.pathname.startsWith('/api')) {
-      const result = await validateEnvironment(req);
-      if (result) return result; // validateEnvironment returns a NextResponse on error
-    }
-  } catch (err) {
-    console.error('Error during environment validation middleware', err);
-    return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
-  }
-
-  return NextResponse.next();
-}
-
-export const config = {
-  matcher: ['/api/:path*'],
-};
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
 export async function middleware(request: NextRequest) {
-  const token = await getToken({ req: request });
   const { pathname } = request.nextUrl;
 
-  // Public routes that don't require authentication
+  // --- Environment validation for API routes ---
+  if (pathname.startsWith('/api') && !pathname.startsWith('/api/auth')) {
+    const mongoUri = process.env.MONGODB_URI;
+    if (!mongoUri) {
+      return NextResponse.json(
+        { error: 'Server configuration error', message: 'MONGODB_URI is not set' },
+        { status: 500 }
+      );
+    }
+    if (mongoUri.includes('<') || mongoUri.includes('>')) {
+      console.error('❌ MONGODB_URI contains unresolved placeholders');
+      return NextResponse.json(
+        {
+          error: 'Server configuration error',
+          message: 'MONGODB_URI contains unresolved placeholders. Copy the real connection string from MongoDB Atlas → Connect → Drivers.',
+        },
+        { status: 500 }
+      );
+    }
+  }
+
+  // --- Public routes that don't require authentication ---
   const publicRoutes = ['/', '/auth/login', '/auth/register'];
-  
-  // Check if current path is a public route
-  const isPublicRoute = publicRoutes.some(route => 
-    pathname === route || pathname.startsWith('/api/auth')
+  const isPublicRoute = publicRoutes.some(
+    (route) => pathname === route || pathname.startsWith('/api/auth')
   );
 
-  // Allow public routes
   if (isPublicRoute) {
-    // If user is logged in and tries to access auth pages, redirect to dashboard
+    const token = await getToken({ req: request });
     if (token && (pathname === '/auth/login' || pathname === '/auth/register')) {
       return NextResponse.redirect(new URL('/dashboard', request.url));
     }
     return NextResponse.next();
   }
 
-  // Protected routes - require authentication
+  // --- Protected routes – require authentication ---
+  const token = await getToken({ req: request });
   if (!token) {
     const loginUrl = new URL('/auth/login', request.url);
     loginUrl.searchParams.set('callbackUrl', pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // Role-based access control
+  // --- Role-based access control ---
   const userRole = token.role as string;
 
-  // Organization-only routes
   if (pathname.startsWith('/dashboard/hackathons/create') && userRole !== 'organization') {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
-
-  // Participant-only routes (IDE)
   if (pathname.startsWith('/dashboard/ide') && userRole !== 'participant') {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
-
-  // Contributor-only routes (Projects marketplace)
-  if (pathname.startsWith('/dashboard/projects') && userRole !== 'contributor' && userRole !== 'participant') {
+  if (
+    pathname.startsWith('/dashboard/projects') &&
+    userRole !== 'contributor' &&
+    userRole !== 'participant'
+  ) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
@@ -77,12 +70,10 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
+     * Match all request paths except:
+     * - _next/static, _next/image (build assets)
+     * - favicon.ico, public files (static assets)
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\..*|api/auth).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)',
   ],
 };
