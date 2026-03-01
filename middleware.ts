@@ -1,3 +1,26 @@
+import { NextRequest, NextResponse } from 'next/server';
+import validateEnvironment from './lib/db/validateEnv';
+
+// Middleware runs for every request. We only perform the heavier
+// environment validation on API routes so developers get a helpful
+// JSON error instead of a cryptic DNS/auth error coming from Mongoose.
+export async function middleware(req: NextRequest) {
+  try {
+    if (req.nextUrl.pathname.startsWith('/api')) {
+      const result = await validateEnvironment(req);
+      if (result) return result; // validateEnvironment returns a NextResponse on error
+    }
+  } catch (err) {
+    console.error('Error during environment validation middleware', err);
+    return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: ['/api/:path*'],
+};
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
