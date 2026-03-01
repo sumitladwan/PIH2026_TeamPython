@@ -86,6 +86,30 @@ If you see errors like `Please define the MONGODB_URI environment variable insid
   - In MongoDB Atlas → Network Access
   - Add `0.0.0.0/0` or specific Railway IP range
 
+#### "querySrv EBADNAME" Error
+This error means MongoDB cannot resolve the hostname in your connection string.
+
+**Causes:**
+- Cluster name in connection string is wrong or outdated
+- Cluster is paused or deleted in MongoDB Atlas
+- Connection string syntax is invalid
+
+**Fix:**
+1. Go to [MongoDB Atlas](https://cloud.mongodb.com)
+2. Click your **Cluster** → **Connect**
+3. Select **Drivers** → **Node.js**
+4. Copy the exact connection string provided
+5. Replace `<password>` with your actual database password
+6. Verify cluster is **running** (not paused):
+   - If paused: click the three dots and **Resume**
+7. Update Railway's `MONGODB_URI` variable with the correct string
+8. Click **Deploy** or **Redeploy**
+
+Example correct format:
+```
+mongodb+srv://username:password@cluster0.abcdef.mongodb.net/hackshield?retryWrites=true&w=majority
+```
+
 #### Build Fails
 - Check Railway's build logs for errors
 - Ensure `package.json` and `package-lock.json` are committed
