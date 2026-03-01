@@ -4,21 +4,29 @@ import { getToken } from 'next-auth/jwt';
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // --- Environment validation for API routes ---
-  if (pathname.startsWith('/api') && !pathname.startsWith('/api/auth')) {
+  // --- Environment validation for ALL API routes (including /api/auth/register) ---
+  if (pathname.startsWith('/api')) {
     const mongoUri = process.env.MONGODB_URI;
     if (!mongoUri) {
+      console.error('❌ MONGODB_URI is not set in environment variables');
       return NextResponse.json(
-        { error: 'Server configuration error', message: 'MONGODB_URI is not set' },
+        { error: 'Server configuration error', message: 'MONGODB_URI is not set. Add it in Railway Variables.' },
         { status: 500 }
       );
     }
     if (mongoUri.includes('<') || mongoUri.includes('>')) {
-      console.error('❌ MONGODB_URI contains unresolved placeholders');
+      console.error(
+        `❌ MONGODB_URI contains unresolved placeholders: ${mongoUri.substring(0, 80)}...\n` +
+        `   Fix: Go to MongoDB Atlas → Cluster → Connect → Drivers → Node.js\n` +
+        `   Copy the REAL connection string and paste it in Railway Variables`
+      );
       return NextResponse.json(
         {
           error: 'Server configuration error',
-          message: 'MONGODB_URI contains unresolved placeholders. Copy the real connection string from MongoDB Atlas → Connect → Drivers.',
+          message: 'MONGODB_URI contains placeholder values like <cluster> or <password>. ' +
+            'Go to MongoDB Atlas → Cluster → Connect → Drivers → Node.js, copy the real connection string, ' +
+            'and update MONGODB_URI in Railway environment variables.',
+          example: 'mongodb+srv://yourUser:yourPassword@cluster0.abc123.mongodb.net/hackshield'
         },
         { status: 500 }
       );

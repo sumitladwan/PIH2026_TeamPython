@@ -37,8 +37,26 @@ function validateMongoDBURI(uri: string): { valid: boolean; error?: string } {
     };
   }
 
-  // Check: No unresolved placeholders
-  const placeholderPatterns = ['<cluster>', '<username>', '<password>', '<.xxxxx.>', '._mongodb._tcp.'];
+  // Check: No unresolved placeholders (angle brackets or known template tokens)
+  if (uri.includes('<') || uri.includes('>')) {
+    return {
+      valid: false,
+      error: `❌ MONGODB_URI contains angle-bracket placeholders (found '<' or '>')\n` +
+        `   Your URI: ${uri.substring(0, 80)}...\n` +
+        `   \n` +
+        `   This means you copied the TEMPLATE, not the real connection string.\n` +
+        `   \n` +
+        `   How to fix:\n` +
+        `   1. Go to MongoDB Atlas: https://cloud.mongodb.com\n` +
+        `   2. Click your Cluster → Connect → Drivers → Node.js\n` +
+        `   3. Copy the FULL connection string (it should NOT have < or > characters)\n` +
+        `   4. Update MONGODB_URI in Railway Variables\n` +
+        `   \n` +
+        `   Example correct format:\n` +
+        `   mongodb+srv://user123:pass456@cluster0.abc123.mongodb.net/hackshield?retryWrites=true&w=majority`
+    };
+  }
+  const placeholderPatterns = ['._mongodb._tcp.'];
   for (const pattern of placeholderPatterns) {
     if (uri.includes(pattern)) {
       return {
