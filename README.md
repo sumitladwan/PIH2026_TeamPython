@@ -48,6 +48,10 @@ npm install
 
 ### Step 2: Configure Environment Variables
 
+This project **requires** a MongoDB connection string to run.  The build
+process imports server code (API routes) and will fail if `MONGODB_URI` is
+missing, so you must set it before deploying (e.g. in Railway, Vercel, etc.).
+
 1. Create a `.env.local` file in the root directory (copy from `.env.example`)
 2. Update the following variables:
 
@@ -62,6 +66,10 @@ NEXTAUTH_SECRET=your-secret-key-here
 # JWT Secret
 JWT_SECRET=your-jwt-secret-here
 ```
+
+> 💡 On deployment platforms you typically define these variables in the
+> project configuration rather than committing a `.env.local` file.  Just
+> make sure `MONGODB_URI` is present or the build step will error out.
 
 ### Step 3: Set up MongoDB Atlas
 
