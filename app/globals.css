@@ -1,0 +1,426 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 15, 23, 42;
+  --background-end-rgb: 2, 6, 23;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: 
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(168, 85, 247, 0.15), transparent),
+    radial-gradient(ellipse 60% 50% at 0% 50%, rgba(6, 182, 212, 0.1), transparent),
+    radial-gradient(ellipse 60% 50% at 100% 50%, rgba(217, 70, 239, 0.1), transparent),
+    radial-gradient(ellipse 100% 100% at 50% 100%, rgba(20, 184, 166, 0.08), transparent),
+    linear-gradient(to bottom, rgb(15, 23, 42), rgb(2, 6, 23));
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(168, 85, 247, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(217, 70, 239, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+@layer base {
+  * {
+    @apply border-dark-700;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-gradient-to-r from-primary-500 via-primary-600 to-secondary-500 
+           hover:from-primary-600 hover:via-primary-700 hover:to-secondary-600
+           text-white font-semibold py-2 px-4 rounded-lg shadow-lg 
+           transform transition-all duration-300 hover:scale-105 
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 
+           focus:ring-offset-dark-900 relative overflow-hidden;
+  }
+
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  .btn-primary:hover::before {
+    left: 100%;
+  }
+
+  .btn-secondary {
+    @apply bg-white/5 backdrop-blur-xl hover:bg-white/10 text-white font-semibold py-2 px-4 rounded-lg 
+           border border-white/10 hover:border-white/20 shadow-lg transform transition-all duration-300 
+           hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary-500 
+           focus:ring-offset-2 focus:ring-offset-dark-900;
+  }
+
+  .btn-accent {
+    @apply bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 
+           text-white font-semibold py-2 px-4 rounded-lg shadow-lg 
+           transform transition-all duration-300 hover:scale-105 
+           focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 focus:ring-offset-dark-900;
+  }
+
+  .btn-danger {
+    @apply bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 
+           text-white font-semibold py-2 px-4 rounded-lg shadow-lg 
+           transform transition-all duration-300 hover:scale-105 
+           focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-dark-900;
+  }
+
+  .card {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-6 
+           shadow-xl hover:shadow-2xl transition-all duration-300;
+  }
+
+  .card-hover {
+    @apply card hover:border-primary-500/30 hover:bg-white/10 hover:-translate-y-1 
+           hover:shadow-[0_0_30px_rgba(168,85,247,0.15)];
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 bg-white/5 backdrop-blur-xl border border-white/10 rounded-lg 
+           text-white placeholder-dark-400 focus:outline-none focus:border-primary-500 
+           focus:ring-2 focus:ring-primary-500/20 focus:bg-white/10 transition-all duration-200;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-dark-200 mb-2;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-primary {
+    @apply badge bg-primary-500/20 text-primary-300 border border-primary-500/30;
+  }
+
+  .badge-success {
+    @apply badge bg-accent-500/20 text-accent-300 border border-accent-500/30;
+  }
+
+  .badge-warning {
+    @apply badge bg-yellow-500/20 text-yellow-300 border border-yellow-500/30;
+  }
+
+  .badge-danger {
+    @apply badge bg-red-500/20 text-red-300 border border-red-500/30;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary-400 via-secondary-400 to-accent-400 
+           bg-clip-text text-transparent;
+  }
+
+  .glass {
+    @apply bg-white/5 backdrop-blur-2xl border border-white/10 shadow-lg;
+  }
+
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-2xl border border-white/10 rounded-2xl p-6
+           shadow-[0_8px_32px_0_rgba(168,85,247,0.1)] 
+           hover:shadow-[0_8px_32px_0_rgba(168,85,247,0.2)]
+           transition-all duration-300;
+  }
+
+  .glass-button {
+    @apply bg-white/10 backdrop-blur-xl border border-white/20 
+           hover:bg-white/20 hover:border-white/30
+           transition-all duration-300 rounded-lg px-4 py-2;
+  }
+
+  .gradient-border {
+    position: relative;
+    background: linear-gradient(to right, rgba(168, 85, 247, 0.1), rgba(6, 182, 212, 0.1));
+    border: 1px solid transparent;
+    background-clip: padding-box;
+  }
+
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.5), rgba(6, 182, 212, 0.5));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .shimmer-effect {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2.5s linear infinite;
+  }
+
+  .glow-text {
+    text-shadow: 0 0 20px rgba(168, 85, 247, 0.5),
+                 0 0 40px rgba(168, 85, 247, 0.3);
+  }
+
+  .floating {
+    animation: float-slow 8s ease-in-out infinite;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(30, 41, 59);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(71, 85, 105);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(100, 116, 139);
+}
+
+/* Monaco Editor customizations */
+.monaco-editor {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* XTerm.js customizations */
+.xterm {
+  padding: 10px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+/* Pulse effect for countdown */
+@keyframes pulseRed {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+  }
+}
+
+.pulse-red {
+  animation: pulseRed 1s infinite;
+}
+
+/* Glow effect for Enter IDE button */
+.glow-button {
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.5),
+              0 0 30px rgba(16, 185, 129, 0.3),
+              0 0 45px rgba(16, 185, 129, 0.1);
+}
+
+.glow-button:hover {
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.7),
+              0 0 40px rgba(16, 185, 129, 0.5),
+              0 0 60px rgba(16, 185, 129, 0.3);
+}
+
+/* New Modern Animations */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 3s infinite;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+  background-size: 1000px 100%;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 8s ease infinite;
+}
+
+/* Grid Background Effect */
+.bg-grid-white\/\[0\.02\] {
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+}
+
+/* Glass Morphism Enhanced */
+.glass-effect {
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Smooth appear animation */
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-appear {
+  animation: appear 0.4s ease-out forwards;
+}
+
+/* Slide up animation */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.5s ease-out forwards;
+}
+
+/* Rotate animation for loading */
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-rotate {
+  animation: rotate 2s linear infinite;
+}
+
+/* Enhanced hover effects */
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+}
+
+/* Bounce animation */
+@keyframes bounce-subtle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 2s ease-in-out infinite;
+}
