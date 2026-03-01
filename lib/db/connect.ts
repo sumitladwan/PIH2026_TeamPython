@@ -1,4 +1,13 @@
 import mongoose from 'mongoose';
+import dns from 'dns';
+
+// Use Google public DNS for SRV lookups.  Many environments (corporate
+// networks, some Railway regions, Docker containers) have local DNS
+// resolvers that cannot resolve MongoDB Atlas SRV records, causing
+// "querySrv ECONNREFUSED _mongodb._tcp.…" errors even though the cluster
+// is perfectly healthy.  Setting Google DNS here fixes that globally for
+// the Node process.
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 // The connection function reads the environment variable at runtime rather
 // than at module initialization.  During the Next.js build process we import
