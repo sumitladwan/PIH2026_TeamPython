@@ -65,6 +65,8 @@ GITHUB_SECRET=your-github-secret
    - Railway automatically redeploys when you push to the default branch
    - Check the **Deployments** tab for status
 
+> **Note:** If you see npm warnings like `npm warn config production Use --omit=dev instead`, these are harmless deprecation warnings and won't affect the build. The project includes `.npmrc` configuration to suppress these warnings.
+
 ### Step 4: Verify Deployment
 
 1. Click the **Domains** tab to get your app URL
