@@ -86,29 +86,44 @@ If you see errors like `Please define the MONGODB_URI environment variable insid
   - In MongoDB Atlas → Network Access
   - Add `0.0.0.0/0` or specific Railway IP range
 
-#### "querySrv EBADNAME" Error
-This error means MongoDB cannot resolve the hostname in your connection string.
+#### "querySrv EBADNAME" or "Unable to resolve hostname" Error
+This error means Mongoose cannot resolve the MongoDB cluster hostname.
 
-**Causes:**
-- Cluster name in connection string is wrong or outdated
-- Cluster is paused or deleted in MongoDB Atlas
-- Connection string syntax is invalid
+**Common causes:**
+- Connection string uses placeholder values (`<cluster>`, `<username>`, `<password>`)
+- Cluster name in the URL doesn't exist or is misspelled
+- Cluster is paused in MongoDB Atlas
+- Invalid connection string format
 
 **Fix:**
-1. Go to [MongoDB Atlas](https://cloud.mongodb.com)
-2. Click your **Cluster** → **Connect**
-3. Select **Drivers** → **Node.js**
-4. Copy the exact connection string provided
-5. Replace `<password>` with your actual database password
-6. Verify cluster is **running** (not paused):
-   - If paused: click the three dots and **Resume**
-7. Update Railway's `MONGODB_URI` variable with the correct string
-8. Click **Deploy** or **Redeploy**
+1. **Get the correct connection string:**
+   - Go to [MongoDB Atlas](https://cloud.mongodb.com)
+   - Click your **Cluster** → **Connect**
+   - Select **Drivers** → **Node.js**
+   - Copy the **entire** connection string (don't modify it except for password)
 
-Example correct format:
-```
-mongodb+srv://username:password@cluster0.abcdef.mongodb.net/hackshield?retryWrites=true&w=majority
-```
+2. **Verify the format:**
+   ```
+   mongodb+srv://username:password@cluster0.abc123.mongodb.net/hackshield?retryWrites=true&w=majority
+   ```
+   Should NOT contain: `<username>`, `<password>`, `<cluster>`, or `<.xxxxx.>`
+
+3. **Check your cluster:**
+   - In MongoDB Atlas, go to **Clusters**
+   - If cluster is **paused**: click the three dots → **Resume**
+   - If cluster is **deleted**: create a new one
+
+4. **Update Railway variable:**
+   - Go to Railway → Service → **Variables**
+   - Update `MONGODB_URI` with the **exact** string from step 1
+   - Click **Deploy** or **Redeploy**
+
+5. **Test the connection locally:**
+   ```bash
+   # First, ensure MONGODB_URI is in .env.local
+   npm run dev
+   # Try to register or access an API that uses the database
+   ```
 
 #### Build Fails
 - Check Railway's build logs for errors
